@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IC Plays Pokemon</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div>
+        <h1>IC Plays Pokemon</h1>
+
+        <div class="round-progress">
+          <span class="dot" id="dot1">•</span>
+          <span class="dot" id="dot2">•</span>
+          <span class="dot" id="dot3">•</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="dpad">
+          <button id="up" class="dpad-button" data-value="up">↑</button>
+          <div class="middle-row">
+            <button id="left" class="dpad-button rot" data-value="left">
+              ↓
+            </button>
+            <div class="center"></div>
+            <button id="right" class="dpad-button rot" data-value="right">
+              ↑
+            </button>
+          </div>
+          <button id="down" class="dpad-button" data-value="down">↓</button>
+        </div>
+
+        <div class="buttons">
+          <button id="a" class="ab-button" data-value="a">A</button>
+          <button id="b" class="ab-button" data-value="b">B</button>
+        </div>
+      </div>
+
+      <div class="start-select">
+        <button id="select" class="small-button" data-value="select">
+          SELECT
+        </button>
+        <button id="start" class="small-button" data-value="start">
+          START
+        </button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
