@@ -5,10 +5,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3000:6901
-      - 4000:3000
+      - 8000:8000
     environment:
       VNC_RESOLUTION: 960x864
       VNC_VIEW_ONLY: "true"
+      ROCKET_ADDRESS: "0.0.0.0"
     volumes:
       - ./.config:/headless/.config
       - ./PokemonRed.zip:/headless/PokemonRed.zip
