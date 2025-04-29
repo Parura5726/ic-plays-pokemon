@@ -4,5 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-axum = "0.8.3"
+rand = "0.9.1"
+rocket = { version = "0.5.1", features = ["serde_json", "json"] }
 tokio = { version = "1.44.2", features = ["rt-multi-thread"] }
+uuid = { version = "1.16.0", features = ["v4"] }

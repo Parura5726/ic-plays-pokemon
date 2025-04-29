@@ -1,8 +1,23 @@
-use std::{collections::HashMap, process::Command, str::FromStr};
+use rand::seq::IteratorRandom;
+use rocket::{
+    FromFormField, State,
+    http::{Cookie, CookieJar, Status},
+    post,
+};
+use std::{
+    collections::HashMap,
+    process::Command,
+    str::FromStr,
+    sync::{Arc, Mutex},
+    time::Duration,
+};
+use tokio::time::interval;
+use uuid::Uuid;
 
-use axum::{extract::Query, http::StatusCode};
+const SESSION_COOKIE: &str = "icp-session";
 
-enum Input {
+#[derive(FromFormField, PartialEq, Eq, Hash, Clone, Copy, Debug)]
+pub enum Input {
     Select,
     Start,
     A,
@@ -46,13 +61,29 @@ impl Input {
     }
 }
 
-pub async fn sendkey(Query(params): Query<HashMap<String, String>>) -> (StatusCode, &'static str) {
-    let Some(Ok(key)) = params.get("key").map(|key| Input::from_str(key)) else {
-        return (StatusCode::BAD_REQUEST, "Missing parameter key");
-    };
+pub type InputState = Arc<Mutex<HashMap<Uuid, Input>>>;
 
+#[post("/sendkey?<key>")]
+pub async fn sendkey(
+    key: Input,
+    state: &State<InputState>,
+    cookies: &CookieJar<'_>,
+) -> (Status, &'static str) {
     // We repeat the input a few times to ensure it is catched by the emulator.
     // The game is slow anyway, so it should not cause an issue.
+
+    let id = match cookies.get(SESSION_COOKIE) {
+        Some(id) => Uuid::from_str(id.value()).unwrap_or_else(|_| Uuid::new_v4()),
+        None => Uuid::new_v4(),
+    };
+    cookies.add(Cookie::build((SESSION_COOKIE, id.to_string())));
+
+    state.lock().unwrap().insert(id, key);
+
+    (Status::Ok, "OK")
+}
+
+fn run_input(key: Input) {
     for _ in 0..3 {
         Command::new("xdotool")
             .arg("key")
@@ -60,6 +91,23 @@ pub async fn sendkey(Query(params): Query<HashMap<String, String>>) -> (StatusCo
             .status()
             .unwrap();
     }
+}
 
-    (StatusCode::OK, "OK")
+pub async fn background(state: InputState) {
+    let mut interval = interval(Duration::from_secs(5));
+
+    loop {
+        interval.tick().await;
+
+        let mut state = state.lock().unwrap();
+
+        let key = state.values().choose(&mut rand::rng()).copied();
+        if let Some(key) = key {
+            run_input(key);
+        }
+
+        state.clear();
+
+        println!("Chosen key: {key:?}")
+    }
 }

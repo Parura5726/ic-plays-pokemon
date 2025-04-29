@@ -1,22 +1,18 @@
-use axum::{Router, routing::get};
-use input::sendkey;
+use input::{InputState, background, sendkey};
+use rocket::{launch, routes};
 
 mod input;
 
 #[tokio::main]
 async fn main() {
-    // build our application with a route
-    let app = Router::new()
-        // `GET /` goes to `root`
-        .route("/", get(root))
-        .route("/sendkey", get(sendkey));
+    let state = InputState::default();
 
-    // run our app with hyper, listening globally on port 3000
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    axum::serve(listener, app).await.unwrap();
-}
+    tokio::spawn(background(state.clone()));
 
-// basic handler that responds with a static string
-async fn root() -> &'static str {
-    "Hello, World!"
+    rocket::build()
+        .mount("/", routes![sendkey])
+        .manage(state)
+        .launch()
+        .await
+        .unwrap();
 }
