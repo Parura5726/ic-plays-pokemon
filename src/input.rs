@@ -9,12 +9,13 @@ use std::{
     process::Command,
     str::FromStr,
     sync::{Arc, Mutex},
-    time::Duration,
+    time::{Duration, Instant},
 };
-use tokio::time::interval;
+use tokio::time::{interval, sleep};
 use uuid::Uuid;
 
 const SESSION_COOKIE: &str = "icp-session";
+const INTERVAL_MILLIS: u64 = 3000;
 
 #[derive(FromFormField, PartialEq, Eq, Hash, Clone, Copy, Debug)]
 pub enum Input {
@@ -26,24 +27,6 @@ pub enum Input {
     Right,
     Down,
     Left,
-}
-
-impl FromStr for Input {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(match s {
-            "select" => Self::Select,
-            "start" => Self::Start,
-            "a" => Self::A,
-            "b" => Self::B,
-            "up" => Self::Up,
-            "right" => Self::Right,
-            "down" => Self::Down,
-            "left" => Self::Left,
-            _ => return Err(()),
-        })
-    }
 }
 
 impl Input {
@@ -94,7 +77,11 @@ fn run_input(key: Input) {
 }
 
 pub async fn background(state: InputState) {
-    let mut interval = interval(Duration::from_secs(5));
+    let now = chrono::offset::Local::now();
+    let rem_millis = INTERVAL_MILLIS - (now.timestamp_millis() as u64 % INTERVAL_MILLIS);
+
+    sleep(Duration::from_millis(rem_millis)).await;
+    let mut interval = interval(Duration::from_millis(INTERVAL_MILLIS));
 
     loop {
         interval.tick().await;

@@ -33,7 +33,9 @@ buttons.forEach((button) => {
 
     console.log("Player pressed:", buttonValue);
 
-    // Send buttonValue to server here
+    fetch(`http://localhost:8000/sendkey?key=${buttonValue}`, {
+      method: "POST",
+    });
   });
 });
 
