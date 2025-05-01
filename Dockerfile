@@ -18,4 +18,5 @@ RUN chmod +x ./Mesen
 
 COPY ./startup.sh ./
 COPY static /static/
+COPY PokemonRed.zip ./PokemonRed.zip
 COPY --from=BUILDER --chown=1000:1000 /target/release/ic-plays-pokemon /headless/server
