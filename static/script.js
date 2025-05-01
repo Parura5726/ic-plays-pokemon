@@ -33,7 +33,7 @@ buttons.forEach((button) => {
 
     console.log(buttonValue);
 
-    fetch(`${window.location.origin}/api/sendkey?key=${buttonValue}`, {
+    fetch(`https://clic.epfl.ch/ic-plays-pokemon/api/sendkey?key=${buttonValue}`, {
       method: "POST",
     });
   });
