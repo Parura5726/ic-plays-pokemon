@@ -31,9 +31,9 @@ buttons.forEach((button) => {
     const button = event.target;
     const buttonValue = button.dataset.value;
 
-    console.log("Player pressed:", buttonValue);
+    console.log(buttonValue);
 
-    fetch(`http://localhost:8000/api/sendkey?key=${buttonValue}`, {
+    fetch(`${window.location.origin}/api/sendkey?key=${buttonValue}`, {
       method: "POST",
     });
   });
