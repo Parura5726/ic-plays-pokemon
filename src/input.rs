@@ -9,7 +9,7 @@ use std::{
     process::Command,
     str::FromStr,
     sync::{Arc, Mutex},
-    time::{Duration, Instant},
+    time::Duration,
 };
 use tokio::time::{interval, sleep};
 use uuid::Uuid;

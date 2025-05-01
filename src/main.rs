@@ -1,5 +1,5 @@
 use input::{InputState, background, sendkey};
-use rocket::{launch, routes};
+use rocket::{fs::{relative, FileServer}, routes};
 
 mod input;
 
@@ -10,7 +10,8 @@ async fn main() {
     tokio::spawn(background(state.clone()));
 
     rocket::build()
-        .mount("/", routes![sendkey])
+        .mount("/api", routes![sendkey])
+        .mount("/", FileServer::from(relative!("static")))
         .manage(state)
         .launch()
         .await
